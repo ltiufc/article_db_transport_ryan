@@ -80,7 +80,10 @@ def aproximacaoDeLatitudeELongitudeMongoDB(database_mongo, id_dicionario, timest
                     selected = index
                     lower_difference = difference
                     first_value = v
-                    next_value = value[index+1]
+                    try:
+                        next_value = value[index+1]
+                    except IndexError:
+                        selected = None
                 index = index + 1
 
         if selected is not None:
@@ -278,7 +281,7 @@ def inserirBilhetagemPlanarMongoDB(database_mongo, file_path):
                     split_row[cont] = row2
                     cont += 1
 
-                timestamp = str(split_row[8] + 'T' + split_row[9] + '.000-0300')
+                timestamp = str(split_row[9] + 'T' + split_row[10] + '.000-0300')
                 format_date = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
 
                 bilhetagem_data = {
@@ -288,8 +291,8 @@ def inserirBilhetagemPlanarMongoDB(database_mongo, file_path):
                     'NOME_CARTAO': split_row[3],
                     'SENTIDO': split_row[4],
                     'INTEGRACAO': split_row[5],
-                    'NUMERO_CARTAO': int(split_row[6]),
-                    'ID_PARADA': int(split_row[7]),
+                    'NUMERO_CARTAO': int(split_row[7]),
+                    'ID_PARADA': int(split_row[8]),
                     'TIMESTAMP': format_date,
                     'LATITUDE': None,
                     'LONGITUDE': None,
@@ -319,7 +322,7 @@ def inserirBilhetagemAninhadaMongoDB(database_mongo, file_path):
                     split_row[cont] = row2
                     cont += 1
 
-                timestamp = str(split_row[8] + 'T' + split_row[9] + '.000-0300')
+                timestamp = str(split_row[9] + 'T' + split_row[10] + '.000-0300')
                 format_date = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
 
                 bilhetagem = {'ID_DICIONARIO': int(split_row[2]), 'NUMERO_LINHA': int(split_row[1]),
@@ -329,8 +332,8 @@ def inserirBilhetagemAninhadaMongoDB(database_mongo, file_path):
                     'ID_BILHETAGEM': int(split_row[0]),
                     'NOME_CARTAO': split_row[3],
                     'INTEGRACAO': split_row[5],
-                    'NUMERO_CARTAO': int(split_row[6]),
-                    'ID_PARADA': int(split_row[7]),
+                    'NUMERO_CARTAO': int(split_row[7]),
+                    'ID_PARADA': int(split_row[8]),
                     'PONTO': {'type': 'Point', 'coordinates': None},
                     'TIMESTAMP': format_date
                 }
@@ -373,7 +376,7 @@ def inserirBilhetagemComIndiceMongoDB(database_mongo, file_path):
                     split_row[cont] = row2
                     cont += 1
 
-                timestamp = str(split_row[8] + 'T' + split_row[9] + '.000-0300')
+                timestamp = str(split_row[9] + 'T' + split_row[10] + '.000-0300')
                 format_date = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
 
                 bilhetagem = {'ID_DICIONARIO': int(split_row[2]), 'NUMERO_LINHA': int(split_row[1]),
@@ -383,8 +386,8 @@ def inserirBilhetagemComIndiceMongoDB(database_mongo, file_path):
                     'ID_BILHETAGEM': int(split_row[0]),
                     'NOME_CARTAO': split_row[3],
                     'INTEGRACAO': split_row[5],
-                    'NUMERO_CARTAO': int(split_row[6]),
-                    'ID_PARADA': int(split_row[7]),
+                    'NUMERO_CARTAO': int(split_row[7]),
+                    'ID_PARADA': int(split_row[8]),
                     'PONTO': {'type': 'Point', 'coordinates': None},
                     'TIMESTAMP': format_date
                 }
@@ -465,8 +468,8 @@ def inserirBilhetagemSQL(conexao, file_path):
 
                 com_sql = "INSERT INTO bilhetagem_novembro(ID_BILHETAGEM,NUMERO_LINHA,ID_DICIONARIO,NOME_CARTAO,SENTIDO,INTEGRACAO,NUMERO_CARTAO,ID_PARADA,DATA,HORA,LATITUDE,LONGITUDE) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
                 valor = (
-                    split_row[0], split_row[1], split_row[2], split_row[3], split_row[4], split_row[5], split_row[6],
-                    split_row[7], split_row[8], split_row[9], None, None)
+                    split_row[0], split_row[1], split_row[2], split_row[3], split_row[5], split_row[6], split_row[7],
+                    split_row[8], split_row[9], split_row[10], None, None)
                 cursor.execute(com_sql, valor)
                 conexao.commit()
 
